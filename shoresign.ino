@@ -2,12 +2,14 @@
 #include "patterns.h"
 #include <FastLED.h>
 
+void fire( CRGB *, unsigned char *, int );
+
 #define DATA_PIN    6
 #define LED_PIN     13
-#define BRIGHTNESS  10
+#define BRIGHTNESS  150
 
 #define LED_TYPE    WS2812B
-#define COLOR_ORDER RGB
+#define COLOR_ORDER GRB
 
 
 #define LEFT		-1
@@ -33,30 +35,27 @@ union Map
 	int Leds[[ ROW1 + ROW2 + ROW3 ];
 } Map = {
 */
-int LedMap[ ROW1 + ROW2 + ROW3 ] =
+#define STRING
+#ifndef STRING
+const int LedMap[ ROW1 + ROW2 + ROW3 ] =
 {
 /* 0  1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20  21  22  23  24  25  26  27  28  29  30  31   32   33   34   35   36   37   38   39   40   41   42   43   44   45   46   47   48   49   50   51   52   53   54   55   56   57   58   59   60   61   62    63  64   65   66   67   68   69   70   71   72   73   74   75   76   77   78   79   80   81   82   83   84   85   86   87   88   89   90   91   92   93   94   95   96   97   98   99  100  101  102  103  104  105  106  107  108  109  110  111  112  113  114  115  116  117  118  119  120  121  122  123  124  125  126  127  128  129  130  131  132  133  134  135  136  137  138  139  140  141  142  143  144  145  146  147  148  149  150  151  152  153  154  155  156  157  158  159  160  161  162  163  164  165*/
    5, 6, 11, 12, 17, 18, 23, 24, 29, 30, 35, 36, 41, 42, 47, 48, 53, 54, 59, 60, 65, 66, 71, 72, 77, 78, 83, 84, 89, 90, 95, 96, 101, 102, 107, 108, 113, 114, 119, 120, 125, 126, 131, 132, 137, 138, 143, 144, 149, 150, 155, 156, 161, 162, 167, 168, 173, 174, 179, 180, 185, 186, 191, 192, 197, 198, 203, 204, 209, 210, 212, 213, 218, 219, 224, 225, 230, 231, 236, 237, 242, 243, 245, 246, 251, 252, 257, 258, 263, 264, 269, 270, 275, 276, 281, 282, 287, 288, 293, 294, 299, 300, 305, 306, 311, 312, 317, 318, 323, 324, 329, 330, 335, 336, 341, 342, 347, 348, 353, 354, 359, 360, 365, 366, 371, 372, 377, 378, 383, 384, 389, 390, 395, 396, 401, 402, 407, 408, 413, 414, 419, 420, 425, 426, 431, 432, 437, 438, 443, 444, 449, 450, 453, 455, 456, 461, 462, 467, 468, 473, 474, 479, 480, 485,   2,   0,
    4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 52, 55, 58, 61, 64, 67, 70, 73, 76, 79, 82, 85, 88, 91, 94, 97, 100, 103, 106, 109, 112, 115, 118, 121, 124, 127, 130, 133, 136, 139, 142, 145, 148, 151, 154, 157, 160, 163, 166, 169, 172, 175, 178, 181, 184, 187, 190, 193, 196, 199, 202, 205, 208, 211, 214, 217, 220, 223, 226, 229, 232, 235, 238, 241, 244, 247, 250, 253, 256, 259, 262, 265, 268, 271, 274, 277, 280, 283, 286, 289, 292, 295, 298, 301, 304, 307, 310, 313, 316, 319, 322, 325, 328, 331, 334, 337, 340, 343, 346, 349, 352, 355, 358, 361, 364, 367, 370, 373, 376, 379, 382, 385, 388, 391, 394, 397, 400, 403, 406, 409, 412, 415, 418, 421, 424, 427, 430, 433, 436, 439, 442, 445, 448, 451, 454, 457, 460, 463, 466, 469, 472, 475, 478, 481, 484,   1,
    8, 9, 14, 15, 20, 21, 26, 27, 32, 33, 38, 39, 44, 45, 50, 51, 56, 57, 62, 63, 68, 69, 74, 75, 80, 81, 86, 87, 92, 93, 98, 99, 104, 105, 110, 111, 116, 117, 122, 123, 128, 129, 134, 135, 140, 141, 146, 147, 152, 153, 158, 159, 164, 165, 170, 171, 176, 177, 182, 183, 188, 189, 194, 195, 200, 201, 206, 207, 215, 216, 221, 222, 227, 228, 233, 234, 239, 240, 248, 249, 254, 255, 260, 261, 266, 267, 272, 273, 278, 279, 284, 285, 290, 291, 296, 297, 302, 303, 308, 309, 314, 315, 320, 321, 326, 327, 332, 333, 338, 339, 344, 345, 350, 351, 356, 357, 362, 363, 368, 369, 374, 375, 380, 381, 386, 387, 392, 393, 398, 399, 404, 405, 410, 411, 416, 417, 422, 423, 428, 429, 434, 435, 440, 441, 446, 447, 452, 458, 459, 464, 465, 470, 471, 476, 477, 482, 483,   3
 };
-
+#else
+const int LedMap[ ROW1 + ROW2 + ROW3 ] =
+{
+/* 0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31   32   33   34   35   36   37   38   39   40   41   42   43   44   45   46   47   48   49   50   51   52   53   54   55   56   57   58   59   60   61   62   63   64   65   66   67   68   69   70   71   72   73   74   75   76   77   78   79   80   81   82   83   84   85   86   87   88   89   90   91   92   93   94   95   96   97   98   99  100  101  102  103  104  105  106  107  108  109  110  111  112  113  114  115  116  117  118  119  120  121  122  123  124  125  126  127  128  129  130  131  132  133  134  135  136  137  138  139  140  141  142  143  144  145  146  147  148  149  150  151  152  153  154  155  156  157  158  159  160  161  162  163  164  165*/
+   0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23,  24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  43,  44,  45,  46,  47,  48,  49,  50,  51,  52,  53,  54,  55,  56,  57,  58,  59,  60,  61,  62,  63,  64,  65,  66,  67,  68,  69,  70,  71,  72,  73,  74,  75,  76,  77,  78,  79,  80,  81,  82,  83,  84,  85,  86,  87,  88,  89,  90,  91,  92,  93,  94,  95,  96,  97,  98,  99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165,
+ 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327,
+ 328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 343, 344, 345, 346, 347, 348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 358, 359, 360, 361, 362, 363, 364, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 380, 381, 382, 383, 384, 385, 386, 387, 388, 389, 390, 391, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 433, 434, 435, 436, 437, 438, 439, 440, 441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485
+};
+#endif
 
 #define MAP( c, r ) LedMap[ ( c * 166   +  r ) - ( c/2 * 4) ]
-
-
-
-#ifdef STRING
-void initMap(void)
-{
-	for ( int i=0; i< sizeof( LedMap ); i++ )
-		LedMap[i] = i;
-}
-
-#else
-void initMap(void) {
-}
-#endif
+#define XY( x, y ) ( x * 13 +  y )
 
 int timer1_counter;
 int timercount = 0;
@@ -98,17 +97,11 @@ void setup() {
 	FastLED.addLeds< WS2812B, DATA_PIN, COLOR_ORDER>((CRGB *) Leds, ROW1+ROW2+ROW3);
 	FastLED.setBrightness(BRIGHTNESS);
 	Serial.begin(19200);
-	initMap();
 }
 
 void rectangle( int column, CRGB color )
 {
-	int size;
-	if ( column == 0 )
-		size = 166;
-	else
-	 	size = column * 166 - ( column * 4 );
-
+	int size = 166 - column * 4;
 	for ( int r = 0; r < size; r++ )
 	{
 		Leds[ MAP( column, r ) ] = color;
@@ -117,31 +110,45 @@ void rectangle( int column, CRGB color )
 
 void vertical( int row, CRGB color )
 {
-	int size = 6;
+	int x = 70 - row;
+	int y = 13 - row;
 
-	if ( row < 3 && row > 67 )
+	switch( row )
 	{
-		switch( row )
-		{
-			case 0:
-			case 68:
-				size = 13;
-				break;
-			case 2:
-			case 69:
-				size = 12;
-				break;
-			case 3:
-			case 70:
-				size = 13;
-		}
-	}
+	case 2:
+		Leds[ MAP ( 0, 2 * 70 + 13 - 1 )] = color;
+		Leds[ MAP ( 0, 0 ) ] = color;
 
-	for ( int y = 0; y < size; y ++ )
-	{
-		Leds[ MAP( y, row ) ] = color;
-	}
+	case 0:
+	case 1:
+		for ( int n = 2 * x + y;  n < 2 * ( x + y ); n ++ )
+			Leds[ MAP( 0, n ) ] = color;
+		break;
 
+	case 71:
+		Leds [ MAP( 0, 69 ) ] = color;
+		Leds [ MAP( 0, 83 ) ] = color;
+
+	case 72:
+	case 73:
+		for ( int n = x; n < x + y; n++ )
+			Leds[ MAP( 0, n ) ] = color;
+		break;
+
+	case 3:
+		Leds[ MAP( 1,0 ) ] = color;
+		Leds[ MAP( 1, 69 * 2 + 11 ) ] = color;
+
+	default:
+		row -= 2;
+		Leds[ MAP( 0, row   )] = color;
+		Leds[ MAP( 1, row   )] = color;
+		Leds[ MAP( 2, row-1 )] = color;
+
+		Leds[ MAP( 0, 2 * 70 + 13 - row -1 )] = color;
+		Leds[ MAP( 1, 2 * 69 + 12 - row -1 )] = color;
+		Leds[ MAP( 2, 2 * 68 + 11 - row    )] = color;
+	}
 }
 
 void diagonal( void )
@@ -151,21 +158,23 @@ void diagonal( void )
 	int x, y, c = 0;
 	const CRGB colors[3] = { CRGB::Red, CRGB::White, CRGB::Blue };
 
-	for ( x = 69, y = 0; x > 1; x-=3 )
+	for ( x = 81, y = 0; x > 1; x-=3 )
 	{
 
-		Leds[ MAP( 0, x )    ] = colors[c];
-		Leds[ MAP( 1, x )    ] = colors[c];
-		Leds[ MAP( 2, x )    ] = colors[c];
+		if ( x < 71 )
+		{
+			Leds[ MAP( 0, x )    ] = colors[c];
+			Leds[ MAP( 1, x )    ] = colors[c];
+			Leds[ MAP( 2, x )    ] = colors[c];
 
-		Leds[ MAP( 0, x-1 )  ] = colors[c];
-		Leds[ MAP( 1, x-1 )  ] = colors[c];
-		Leds[ MAP( 2, x-1 )  ] = colors[c];
+			Leds[ MAP( 0, x-1 )  ] = colors[c];
+			Leds[ MAP( 1, x-1 )  ] = colors[c];
+			Leds[ MAP( 2, x-1 )  ] = colors[c];
 
-		Leds[ MAP( 0, x-2 )  ] = colors[c];
-		Leds[ MAP( 1, x-2 )  ] = colors[c];
-		Leds[ MAP( 2, x-2 )  ] = colors[c];
-
+			Leds[ MAP( 0, x-2 )  ] = colors[c];
+			Leds[ MAP( 1, x-2 )  ] = colors[c];
+			Leds[ MAP( 2, x-2 )  ] = colors[c];
+		}
 
 		y += 2;
 		Leds[ MAP( 0, x + y + 4 )  ] = colors[c];
@@ -176,7 +185,6 @@ void diagonal( void )
 		Leds[ MAP( 0, x-1  + y + 4 )  ] = colors[c];
 		Leds[ MAP( 1, x-1  + y + 2 )  ] = colors[c];
 		Leds[ MAP( 2, x-1  + y     )  ] = colors[c];
-
 
 		y += 2;
 		Leds[ MAP( 0, x-2 + y + 4 )  ] = colors[c];
@@ -189,17 +197,49 @@ void diagonal( void )
 		c++;
 		if ( c > 2 )
 			c = 0;
-
 	}
-
+	FastLED.delay( 360 );
 }
 
-/*
+
 void draw( int x0, int y0, int x1, int y1, CRGB color )
 {
+  int16_t dx = x1 - x0;
+  int16_t dy = y1 - y0;
 
+  if (abs(dx) >= abs(dy))
+  {
+    int32_t f = (dy << 16) / abs(dx);
+    int32_t y = (y0 << 16) + 32768;
+    if (dx >= 0)
+    {
+      for (; x0<=x1; ++x0, y+=f )
+        Leds[ MAP( x0, (y >> 16)) ] = color;
+    }
+    else
+    {
+      for (; x0>=x1; --x0, y+=f )
+        Leds[ MAP( x0, (y >> 16)) ] = color;
+    }
+  }
+  else
+  {
+    int32_t f = (dx << 16) / abs(dy);
+    int32_t x = (x0 << 16) + 32768;
+    if (dy >= 0)
+    {
+      for (; y0<=y1; ++y0, x+=f )
+        Leds[ MAP( (x >> 16), y0 ) ] = color;
+    }
+    else
+    {
+      for (; y0>=y1; --y0, x+=f )
+        Leds[ MAP( (x >> 16), y0 ) ] = color;
+    }
+  }
 }
-*/
+
+
 void rotate(int direction, int column) {
 	int number;
 	CRGB temp;
@@ -252,55 +292,38 @@ void shift(int direction, int row ) {
 
 void test(void)
 {
-	int number;
 	FastLED.clear();
+
 	CRGB color = CRGB::Green;
-	/*
-	for (int c = 0; c < COLUMNS; c++)
+	for ( int i = 0; i < 486; i++ )
 	{
-
-		int rows = 166 - ( 2 * c );
-		Serial.println( rows );
-		for (int r = 0; r < rows; r++)
-		{
-			number = MAP(c, r);
-			//Serial.println( number );
-
-			Leds[number] = color;
-			FastLED.delay(10);
-			FastLED.show();
-		}
-	}
-	*/
-	for ( int r = 0; r < 168; r++ )
-	{
-		FastLED.clear();
-		Leds[ MAP( 0, r ) ] = CRGB::Green;
-		Leds[ MAP( 1, r ) ] = CRGB::Green;
-		Leds[ MAP( 2, r ) ] = CRGB::Green;
+		Leds[i] = color;
+		FastLED.delay(5);
 		FastLED.show();
-		FastLED.delay( 360 );
 	}
 }
 
 void rotate_test(void) {
 	FastLED.clear();
-	for (int c = 0; c < COLUMNS; c++) {
-		Leds[ MAP(c, 0) ] = CRGB::Red;
-		Leds[ MAP(c, 1) ] = CRGB::White;
-		Leds[ MAP(c, 2) ] = CRGB::Blue;
-	}
+
+	for (int c = 0; c < COLUMNS; c++)
+		for ( int r = 0; r < 166 - 2 * c; r+=3 )
+		{
+			Leds[ MAP( c, r )   ] = CRGB::Yellow;
+			Leds[ MAP( c, r+1 ) ] = CRGB::Green;
+			Leds[ MAP( c, r+ 2) ] = CRGB::Purple;
+		}
 	FastLED.show();
 	FastLED.delay(360);
 
 	for (int r = 0; r < ROW3; r++)
 	{
 		rotate( RIGHT, 0 );
-		rotate( LEFT,  1 );
+		rotate( LEFT,  1  );
 		rotate( RIGHT, 2 );
 
 		FastLED.show();
-		FastLED.delay(120);
+		FastLED.delay(60);
 	}
 
 }
@@ -308,42 +331,89 @@ void rotate_test(void) {
 void shift_test(void) {
 	FastLED.clear();
 
-	rectangle(0, CRGB::Red);
+	rectangle(0, CRGB::DarkGreen);
 	rectangle(1, CRGB::White);
-	rectangle(2, CRGB::Blue);
+	rectangle(2, CRGB::Red);
 
 	FastLED.show();
-	FastLED.delay(2000);
+	FastLED.delay(30);
 
-	for (int c = 0; c < COLUMNS; c++) {
-		for (int r = 0; r < ROW3; r++)
+	for ( int n = 0; n < 30; n ++ )
+	{
+		for (int c = 0; c < COLUMNS; c++)
 		{
-			shift( DOWN, r );
+			for (int r = 0; r < ROW3; r++)
+				shift( DOWN, r );
+
 			FastLED.show();
-			FastLED.delay(360);
+			FastLED.delay(120);
 		}
+
 	}
 }
+
+void vertical_test( void )
+{
+	FastLED.clear();
+	rectangle( 0, CRGB::Red );
+	rectangle( 1, CRGB::White );
+	rectangle( 2, CRGB::Red );
+
+	for ( int i= 0; i < 74; i++ )
+	{
+		vertical(i , CRGB::Blue );
+		FastLED.show();
+		FastLED.delay( 20 );
+	}
+}
+
+void flames( void )
+{
+
+  unsigned char heat[  ROW1+ROW2+ROW3 ];
+
+  random16_add_entropy( random() );
+
+
+  for( int i=0; i < ROW1+ROW2+ROW3 ; i++  )
+	  heat[i] = 200;
+      //heat[i] = random() % 200;
+
+  for( int r = 0; r < 100; r++ )
+  {
+	  fire( &Leds[ MAP( 0,0 ) ], &heat[0]          , ROW1 );
+	  fire( &Leds[ MAP( 1,0 ) ], &heat[ROW1+1]     , ROW2 );
+	  fire( &Leds[ MAP( 2,0 ) ], &heat[ROW1+ROW2+1], ROW3 );
+	  FastLED.show();
+	  FastLED.delay(30);
+  }
+
+}
+
 
 typedef struct {
 	void (*func)(void);
 	int times;
 } Patterns;
 
-#define MAX_PATTERNS 1
+#define MAX_PATTERNS 2
 const Patterns PATTERN[MAX_PATTERNS] = {
 //		test, 			   1,
 //		rotate_test,       1,
 //		shift_test,		   1,
+//		vertical_test,     1,
 		diagonal,          1,
+		flames,            1,
 };
 
 void loop() {
 	FastLED.clear();
+
 	for (int i = 0; i < MAX_PATTERNS; i++) {
 		int times = PATTERN[i].times;
 		while (times--)
 			PATTERN[i].func();
 	}
+
 }
 
