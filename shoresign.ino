@@ -6,7 +6,7 @@ void fire( CRGB *, unsigned char *, int );
 
 #define DATA_PIN    6
 #define LED_PIN     13
-#define BRIGHTNESS  50
+#define BRIGHTNESS  200
 
 #define LED_TYPE    WS2812B
 #define COLOR_ORDER GRB
@@ -23,6 +23,7 @@ void fire( CRGB *, unsigned char *, int );
 #define R1			70
 #define R2			69
 #define R3			68
+
 #define C1     		13
 #define C2     		12
 #define C3     		11
@@ -77,92 +78,162 @@ void rectangle( int column, CRGB color )
 		Leds[ MAP( column, r ) ] = color;
 }
 
-void vertical( int row, CRGB color )
+
+void vertical( int row, CRGB *color )
 {
-	int x = R1 - row;
-	int y = C1 - row;
+	int start, height;
+	int inc;
 
 	switch( row )
 	{
-	case 2:
-		Leds[ MAP ( 0, 2 * R1 + C1 - 1 )] = color;
-		Leds[ MAP ( 0, 0 ) ] = color;
-
 	case 0:
+		inc = -1;
+		start = ROW1-1;
+		height = ROW1 - C1 - 1;
+		break;
+
 	case 1:
-		for ( int n = 2 * x + y;  n < 2 * ( x + y ); n ++ )
-			Leds[ MAP( 0, n ) ] = color;
+		inc = -1;
+		start = ROW2-1;
+		height = ROW2 - C2 - 1;
+		break;
+
+	case 2:
+		Leds[ MAP( 0,  0 )  ] = *color++;
+		Leds[ MAP( 0,  ROW1 - C1 - 1 ) ] = *color++;
+		inc = -1;
+		start = ROW3-1;
+		height = ROW3 - C3 - 1;
 		break;
 
 	case 71:
-		Leds [ MAP( 0, 69 ) ] = color;
-		Leds [ MAP( 0, 83 ) ] = color;
-
-	case 72:
-	case 73:
-		for ( int n = x; n < x + y; n++ )
-			Leds[ MAP( 0, n ) ] = color;
+		Leds[ MAP( 0, R1-1   ) ] = *color++;
+		Leds[ MAP( 2, R3     ) ] = *color++;
+		Leds[ MAP( 0, R1+ C1 ) ] = *color++;
+		inc = 1;
+		start = R3 + 1;
+		height = R3 + C3;
 		break;
 
-	case 3:
-		Leds[ MAP( 1,0 ) ] = color;
-		Leds[ MAP( 1, 69 * 2 + 11 ) ] = color;
+	case 72:
+		Leds[ MAP( 1, R2 ) ] = *color++;
+		inc = 1;
+		start = R2 + 1;
+		height = R2 + C2;
+		break;
+
+	case 73:
+		inc = 1;
+		start = R1;
+		height = R1 + C1;
+		break;
 
 	default:
 		row -= 2;
-		Leds[ MAP( 0, row   )] = color;
-		Leds[ MAP( 1, row   )] = color;
-		Leds[ MAP( 2, row-1 )] = color;
+		Leds[ MAP( 0, row   )] = *color++;
+		Leds[ MAP( 1, row   )] = *color++;
+		Leds[ MAP( 2, row-1 )] = *color++;
 
-		Leds[ MAP( 0, 2 * R1 + C1 - row -1 )] = color;
-		Leds[ MAP( 1, 2 * R2 + C2 - row -1 )] = color;
-		Leds[ MAP( 2, 2 * R3 + C3 - row    )] = color;
+		Leds[ MAP( 0, 2 * R1 + C1 - row -1 )] = *color++;
+		Leds[ MAP( 1, 2 * R2 + C2 - row -1 )] = *color++;
+		Leds[ MAP( 2, 2 * R3 + C3 - row    )] = *color++;
+		return;
+	}
+
+	if ( row > 70 )
+		row = 73 - row;
+
+	for ( int i = start; i != height; i += inc )
+	{
+		Leds[ MAP( row, i ) ] = *color++;
 	}
 }
+
 
 void horizontal( int column, CRGB *color )
 {
-	int size = ROW1 - ( column * 4 );
-	if ( column < 3  )
+	int start, width;
+
+	switch ( column )
 	{
-		int r = 0;
-		for ( ; r < R1- column + 1; r ++ )
+	case 0:
+		start = 0;
+		width = R1;
+		Leds[ MAP( 0, ROW1 - 1 ) ] = *color++;
+		Leds[ MAP( 0, R1 )] = *color++;
+		break;
+
+	case 1:
+		start = 0;
+		width = R2;
+		Leds[ MAP( 1, ROW2 - 1) ] = *color++;
+		Leds[ MAP( 1, R2 )      ] = *color++;
+		break;
+
+	case 2:
+		start = 0;
+		width = R3;
+		Leds[ MAP( 2, ROW3 - 1 ) ] = *color++;
+		Leds[ MAP( 0, ROW1 - 2 ) ] = *color++;
+
+		Leds[ MAP( 2, R3 )       ] = *color++;
+		break;
+
+	case 12:
+		column = 2;
+		start = R3 + C3;
+		width = R3;
+
+		Leds[ MAP( 0, R1 * 2 + C1 + 1 )] = *color++;
+
+		Leds[ MAP( 2, start - 1 ) ]      = *color++;
+
+		Leds[ MAP( 0, R1 + C1 - 2)]      = *color++;
+		break;
+
+	case 13:
+		column = 1;
+		start = R2 + C2;
+		width = R2;
+
+		Leds [MAP( 1, R2 * 2 + C2 )] = *color++;
+		Leds[ MAP( 1, start - 1 ) ] = *color++;
+
+		break;
+
+	case 14:
+		column = 0;
+		start = R1 + C1;
+		width = R1;
+
+		Leds [MAP( 0, R1 *2 + C1  )] = *color++;
+		Leds[ MAP( 0, start - 1   )] = *color++;
+		break;
+
+	default:
+		width = 6;
+	}
+
+	if ( width > 6 )
+	{
+		for ( int r = start; r < start + width; r++  )
 			Leds[ MAP( column, r ) ] = *color++;
 
-		Leds[ MAP( column, size-1 ) ] = *color++;
-		if ( column == 2 )
-		{
-			Leds[MAP(0, R1 + 1)] = *color++;
-			Leds[MAP(0, ROW1 - 2)] = *color++;
-		}
 
-	}
-	else if ( column >= 11 )
-	{
-		int c = abs( column - 13 );
-		int r = R1+C1 - c * 2 - 1;
-		for ( ; r < (2 * R1) + C1 - (c * 3 ) + 1; r++  )
-			Leds[ MAP( c, r) ] = *color++;
-		if ( c == 2 )
-		{
-			Leds[ MAP( 0, R1 + C1 - 1 ) ] = *color++;
-			Leds[ MAP( 0, 2 * R1 + C1 + 1 ) ] = *color++;
-		}
 	}
 	else
 	{
-		int c = column-3;
-		Leds[ MAP( 0, ROW1 - (c + 3)  ) ] = *color++;
-		Leds[ MAP( 1, ROW2 - (c + 2)  ) ] = *color++;
-		Leds[ MAP( 2, ROW3 - (c + 2)  ) ] = *color++;
+		column -= 3;
+		Leds[ MAP( 0, ROW1 - column - 3 ) ] = *color++;
+		Leds[ MAP( 1, ROW2 - column - 2 ) ] = *color++;
+		Leds[ MAP( 2, ROW3 - column - 2 ) ] = *color++;
 
-		Leds[ MAP( 2, R3 + c + 1 ) ] = *color++;
-		Leds[ MAP( 1, R2 + c + 1 ) ] = *color++;
-		Leds[ MAP( 0, R1 + c + 2 ) ] = *color++;
+		Leds[ MAP( 2, R3 + column + 1   ) ] = *color++;
+		Leds[ MAP( 1, R2 + column + 1   ) ] = *color++;
+		Leds[ MAP( 0, R1 + column + 2   ) ] = *color++;
 	}
-
-
 }
+
 
 void diagonal( int row, int direction, CRGB* color  )
 {
@@ -229,6 +300,7 @@ void rotate(int direction, int column ) {
 	}
 }
 
+
 void shift(int direction, int row ) {
 	int number;
 	CRGB temp;
@@ -257,30 +329,18 @@ void shift(int direction, int row ) {
 	}
 }
 
-void test(void)
-{
-	FastLED.clear();
-
-	CRGB color = CRGB::Green;
-	for ( int i = 0; i < 486; i++ )
-	{
-		Leds[i] = color;
-		FastLED.delay(5);
-		FastLED.show();
-	}
-}
 
 void diagonal_test( void )
 {
 	FastLED.clear();
 	CRGB colors[ 13 ];
-  for( int i=0; i<13; i++ )
-  {
-    if ( i %2 == 0 )
-      colors[i] = CRGB::Blue;
-    else
-      colors[i] = CRGB::Pink;
-  }
+	for( int i=0; i<13; i++ )
+	{
+		if ( i %2 == 0 )
+			colors[i] = CRGB::Blue;
+		else
+			colors[i] = CRGB::Pink;
+	}
 	
 	for ( int x = -8; x < R3+1; x++ )
 	{
@@ -289,6 +349,7 @@ void diagonal_test( void )
 		FastLED.delay( 5 );
 	}
 }
+
 
 void rotate_test(void) {
 	FastLED.clear();
@@ -317,6 +378,7 @@ void rotate_test(void) {
 
 }
 
+
 void shift_test(void) {
 	FastLED.clear();
 
@@ -343,69 +405,85 @@ void shift_test(void) {
 
 void vertical_test( void )
 {
-	FastLED.clear();
 	CRGB red[R1+2];
 	CRGB white[R1+2];
+	CRGB blue[C1+2];
+
+	FastLED.clear();
 
 	int i;
 	for ( i = 0; i < R1+2; i++ )
+	{
 		red[i] = CRGB::Red;
-
-	for ( i = 0; i < R1+2; i++ )
 		white[i] = CRGB::White;
-
-	for ( i = 0; i < C1; i++)
+		if ( i < C1 )
+			blue[i] = CRGB::Navy;
+	}
+	/*
+	for ( i = 0; i < C1+2; i++)
 	{
 		if ( i % 2 == 0 )
 			horizontal( i, red);
 		else
 			horizontal( i, white );
 
-		FastLED.delay( 30 );
+		FastLED.delay( 60 );
+		FastLED.clear();
 	}
 
 	FastLED.show();
-	FastLED.delay( 600 );
+	FastLED.delay( 60 );
+	*/
 
-	for ( int i= 0; i < 74; i++ )
+	for ( int i = 0; i < R1+4; i++ )
 	{
-		vertical(i , CRGB::Blue );
+		vertical(i , blue );
 		FastLED.show();
-		FastLED.delay( 30 );
+		FastLED.delay( 100 );
+		FastLED.clear();
 	}
 
 }
+
 
 void flames( void )
 {
 
-  unsigned char heat[13];
-  CRGB colors[13];
-  int len;
+  unsigned char heat[74][13];
+  CRGB colors[74][13];
 
   random16_add_entropy( random() );
 
+  memset( heat, sizeof( heat), 200 );
 
-  for( int i=0; i < 13 ; i++  )
-	  heat[i] = 200;
-
-
-  for( int r = 0; r < C1; r++ )
+  FastLED.clear();
+  for ( int i = 0; i< 255; i++)
   {
+	  for ( int l = 0; l < 74 ; l++ )
+	  {
+		  if ( l >= 3 && l < 71 )
+			  continue;
 
-	  if ( r < 3 || r > R1 - 3 )
-		  len = 13;
-	  else
-		  len = 6;
-
-	  fire( colors, heat, len );
-	  horizontal( r, colors );
-	  FastLED.show();
-	  FastLED.delay(30);
+		  fire( colors[l], heat[l], 13 );
+		  vertical( l, colors[l] );
+		  FastLED.show();
+	  }
   }
 
 }
 
+
+void test(void)
+{
+	FastLED.clear();
+
+	CRGB color = CRGB::Green;
+	for ( int i = 0; i < 486; i++ )
+	{
+		Leds[i] = color;
+		FastLED.show();
+	}
+}
 
 typedef struct {
 	void (*func)(void);
@@ -414,7 +492,6 @@ typedef struct {
 
 #define MAX_PATTERNS 1
 const Patterns PATTERN[MAX_PATTERNS] = {
-//		test, 			   1,
 //		rotate_test,       1,
 //		shift_test,		   1,
 		vertical_test,     1,
@@ -424,6 +501,7 @@ const Patterns PATTERN[MAX_PATTERNS] = {
 
 void loop() {
 	FastLED.clear();
+	test();
 
 	for (int i = 0; i < MAX_PATTERNS; i++) {
 		int times = PATTERN[i].times;
