@@ -76,19 +76,19 @@ int XY( int x, int y )
 		if ( x == R1 + 1 )
 			return MAP( 0, R1 );
 
-		return MAP( y, x - 1 );
+		return MAP( 0, x - 1 );
 
 	case 1:
 		if ( x == 0 )
 			return MAP( 1, ROW2 - 1);
-
+		/*
 		if ( x == 1 )
 			return MAP( 1, 0 );
-
+		*/
 		if ( x >= R1+1 )
 			return -1;
 
-		return MAP( y, x - 1 );
+		return MAP( 1, x - 1 );
 
 	case 2:
 		if ( x == 0 )
@@ -103,14 +103,16 @@ int XY( int x, int y )
 		if ( x == R1 + 1 )
 			return MAP( 0, R1 + 1 );
 
-		return MAP( y, x - 2);
+		return MAP( 2, x - 2);
 
 	case 12:
 		if( x == 0 )
 			return MAP( 0, 2 * R1 + C1 + 1 );
 
+		/*
 		if ( x == 1 )
 			return MAP( 2, 2 * R3 + C3 );
+		*/
 
 		if ( x >= R1 + 1 )
 			return MAP( 0, R1 + C1 - 2);
@@ -118,7 +120,6 @@ int XY( int x, int y )
 		return MAP( 2, 2 * R3 + C3 - x + 1 );
 
 	case 13:
-
 		if ( x > R1 )
 			return -1;
 
@@ -126,12 +127,13 @@ int XY( int x, int y )
 
 
 	case 14:
+		/*
 		if ( x == 0 )
 			return MAP( 0, R1 * 2 + C1  );
 
 		if ( x == 1 )
-			return MAP( 0, R1 *2 + C1 - 1 );
-
+			return MAP( 0, R1 * 2 + C1 - 1 );
+		*/
 		return MAP( 0, 2 * R1 + C1 - x );
 
 	default:
@@ -147,13 +149,13 @@ int XY( int x, int y )
 		case 2:
 			return MAP( 2, ROW3 - y - 2 );
 
-		case 3:
+		case R1:
 			return MAP( 2, R3 + y + 1   );
 
-		case 4:
+		case R1+1:
 			return MAP( 1, R2 + y + 1   );
 
-		case 5:
+		case R1+2:
 			return MAP( 0, R1 + y + 2   );
 
 		default:
@@ -170,16 +172,15 @@ void test(void)
 	for ( int i = 0; i < 486; i++ )
 	{
 		Leds[i] = color;
-		FastLED.show();
 	}
-	FastLED.clear();
-
+	FastLED.show();
+	FastLED.delay( 360 );
 }
 
 void setup() {
 	FastLED.addLeds< WS2812B, DATA_PIN, COLOR_ORDER>((CRGB *) Leds, ROW1+ROW2+ROW3);
 	FastLED.setBrightness(BRIGHTNESS);
-	//test();
+	test();
 	//Serial.begin(9600);
 }
 
