@@ -2,6 +2,10 @@
 #include "patterns.h"
 #include <FastLED.h>
 
+CRGBPalette16 currentPalette = RainbowColors_p;
+TBlendType currentBlending = LINEARBLEND;
+
+
 
 #define DATA_PIN    6
 #define LED_PIN     13
@@ -69,56 +73,35 @@ int XY( int x, int y )
 
 	switch( y )
 	{
+
+	// Horizontal lines
 	case 0:
-		if ( x == 0 )
-			return MAP( 0, ROW1 - 1 );
+		if ( x < 3 )
+			return MAP( 0, ROW1 - x );
 
-		if ( x == R1 + 1 )
-			return MAP( 0, R1 );
+		return MAP( 0, x - 2 );
 
-		return MAP( 0, x - 1 );
 
 	case 1:
-		if ( x == 0 )
-			return MAP( 1, ROW2 - 1);
+		if ( x < 3 )
+			return MAP( 1, ROW2 - x );
 
-		if ( x >= R1+1 )
-			return -1;
-
-		return MAP( 1, x - 1 );
+		return MAP( 1, x - 2 );
 
 	case 2:
-		if ( x == 0 )
-			return MAP( 0, ROW1 - 2 );
+		if ( x < 3 )
+			return MAP( 2, ROW3 - x );
 
-		if ( x == 1 )
-			return MAP( 2, ROW3 - 1 );
-
-		if ( x == R1  )
-			return MAP( 2, R3 );
-
-		if ( x == R1 + 1 )
-			return MAP( 0, R1 + 1 );
-
-		return MAP( 2, x - 2);
+		return MAP( 2, x - 3);
 
 	case 12:
-		if( x == 0 )
-			return MAP( 0, 2 * R1 + C1 + 1 );
-
-		if ( x >= R1 + 1 )
-			return MAP( 0, R1 + C1 - 2);
-
-		return MAP( 2, 2 * R3 + C3 - x + 1 );
+		return MAP( 2, ROW3 - C3 - x + 2 );
 
 	case 13:
-		if ( x > R1 )
-			return -1;
-
-		return MAP( 1, 2 * R2 + C2 - x );
+		return MAP( 1, ROW2 - C2 - x + 1 );
 
 	case 14:
-		return MAP( 0, 2 * R1 + C1 - x );
+		return MAP( 0, ROW1 - C1 - x + 1 );
 
 	default:
 		y -= 3;
@@ -128,10 +111,10 @@ int XY( int x, int y )
 			return MAP( 0, ROW1 - y - 3 );
 
 		case 1:
-			return MAP( 1, ROW2 - y - 2 );
+			return MAP( 1, ROW2 - y - 2 ); //160
 
 		case 2:
-			return MAP( 2, ROW3 - y - 2 );
+			return MAP( 2, ROW3 - y - 2 ); // 156
 
 		case R1-1:
 			return MAP( 2, R3 + y + 1   );
@@ -148,15 +131,15 @@ int XY( int x, int y )
 	}
 }
 
+
 void test(void)
 {
 	FastLED.clear();
 
 	CRGB color = CRGB::Green;
 	for ( int i = 0; i < 486; i++ )
-	{
 		Leds[i] = color;
-	}
+
 	FastLED.show();
 	FastLED.delay( 360 );
 }
@@ -213,6 +196,20 @@ void diagonal( int row, CRGB color  )
 	}
 }
 
+void diagonal_test( void )
+{
+	rectangle( 0, CRGB::OrangeRed);
+	rectangle( 1, CRGB::OrangeRed);
+	rectangle( 2, CRGB::OrangeRed);
+	for ( int i=73; i>0; i-=3 )
+	{
+		diagonal( i, CRGB::Black);
+		FastLED.show();
+		FastLED.delay( 60 );
+	}
+}
+
+
 void stripes( void )
 {
 	FastLED.clear();
@@ -248,7 +245,7 @@ void stripes( void )
 
 
 		y += 2;
-		Leds[ MAP( 0, x-2 + y + 4 )  ] = colors[c];
+		Leds[ MAP( 0, x-2 + y + 4 )  ]  = colors[c];
 		Leds[ MAP( 1, x-2 + y + 2 )   ] = colors[c];
 		Leds[ MAP( 2, x-2 + y     )   ] = colors[c];
 
@@ -296,89 +293,78 @@ void rotate(int column, int start, int size )
 	}
 }
 
-void rotate_test(void) {
 
-	for ( int r = 0; r< ROW3; r++ )
+void rotate_bar( int direction, int bar )
+{
+
+	int length = R3+1;
+	switch( bar )
 	{
+	case UP:
+		if ( direction == RIGHT )
+			length = length * -1;
 
-		if ( r > 0 && r % 4 == 0 )
-			continue;
+		rotate( 0, 1, length );
+		rotate( 1, 1, length );
+		rotate( 2, 0, length );
+		break;
 
-		Leds[ MAP( 0, r ) ] = CRGB::Red;
+	case DOWN:
+		if ( direction == LEFT )
+			length = length * -1;
 
-		if ( r < ROW2 )
-			Leds[ MAP( 1, r ) ] = CRGB::White;
-
-		if ( r < ROW3 )
-			Leds[ MAP( 2, r ) ] = CRGB::Blue;
-	}
-
-	CRGB color;
-	for ( int y = 0; y < C1+2; y ++ )
-	{
-		if ( y > 2 && y < C1-1 )
-		{
-			Serial.println( y );
-			if ( y > 2 && y < 6 )
-				color = CRGB::White;
-
-			if ( y >= 6 && y < 10 )
-				color = CRGB::Blue;
-
-			if ( y >= 10 && y < 14 )
-				color = CRGB::Red;
-
-			Leds[ XY( 0, y )] = color;
-			Leds[ XY( 1, y )] = color;
-			Leds[ XY( 2, y )] = color;
-
-			Leds[ XY( R1-1 , y)] = color;
-			Leds[ XY( R1   , y)] = color;
-			Leds[ XY( R1+1 , y)] = color;
-			continue;
-		}
-
-		for ( int x = 0; x < R1+1;  )
-		{
-			Leds[ XY( x++, y ) ] = CRGB::Red;
-			Leds[ XY( x++, y ) ] = CRGB::Red;
-			Leds[ XY( x++, y ) ] = CRGB::Red;
-			Leds[ XY( x++, y ) ] = CRGB::Red;
-			Leds[ XY( x++, y ) ] = CRGB::White;
-			Leds[ XY( x++, y ) ] = CRGB::White;
-			Leds[ XY( x++, y ) ] = CRGB::White;
-			Leds[ XY( x++, y ) ] = CRGB::White;
-			Leds[ XY( x++, y ) ] = CRGB::Blue;
-			Leds[ XY( x++, y ) ] = CRGB::Blue;
-			Leds[ XY( x++, y ) ] = CRGB::Blue;
-			Leds[ XY( x++, y ) ] = CRGB::Blue;
-		}
-	}
-	FastLED.show();
-
-	for (int r = 0; r < 4; r++)
-	{
-		rotate( 0, 0, R1+1 );
-		rotate( 1, 0, R2+1 );
-		rotate( 2, 0, R3+1 );
-
-		rotate( 0, R1, C1 );
-		rotate( 1, R2, C2 );
-		rotate( 2, R3, C3 );
-
-		rotate( 0, R1+C1-1, R1 );
-		rotate( 1, R2+C2-1, R2 );
-		rotate( 2, R3+C3-1, R3 );
-
-		rotate( 0, 2*R1+C1, C1 );
-		rotate( 1, 2*R2+C2, C2 );
-		rotate( 2, 2*R3+C3, C3 );
-
-		FastLED.show();
-		FastLED.delay( 1800 );
+		rotate( 0, R1+C1,   length );
+		rotate( 1, R2+C2-1, length );
+		rotate( 2, R3+C3-1, length );
+		break;
 	}
 }
 
+void rotate_test(void)
+{
+	CRGB colors[3] = { CRGB::Red, CRGB::White, CRGB::Blue };
+	CRGB color;
+
+	int number;
+
+	//FastLED.clear();
+	/*
+	for ( int x = 3; x < R1+1; x++ )
+	{
+		color = colors[ (( x -3 ) / 4 ) % 3 ];
+
+		Leds[ XY( x, 0 ) ] = color;
+		Leds[ XY( x, 1 ) ] = color;
+		Leds[ XY( x, 2 ) ] = color;
+
+		Leds[ XY( x, 12  ) ] = color;
+		Leds[ XY( x, 13  ) ] = color;
+		Leds[ XY( x, 14  ) ] = color;
+	}
+	FastLED.show();
+	*/
+	for ( int y=0; y < C1; y++ )
+	{
+		color = colors[ ( y / 4 ) % 3 ];
+		for ( int x = 0; x < 3 ; x++ )
+		{
+			Leds[ XY( x, y ) ] = color;
+			FastLED.show();
+		}
+	}
+
+	/*
+	FastLED.show();
+	for (int r = 0; r < 100; r++)
+	{
+		rotate_bar( RIGHT, DOWN );
+		rotate_bar( LEFT, UP);
+
+		FastLED.show();
+		FastLED.delay( 60 );
+	}
+	*/
+}
 
 void flag( void )
 {
@@ -406,9 +392,9 @@ void flag( void )
 		FastLED.delay( 30 );
 	}
 
-	for ( int x = R1 + 1; x >= 0; x-- )
+	for ( int x = R1 + 2; x >= 0; x-- )
 	{
-		if ( x % 5  == 0  && x > 0 && x < R1 )
+		if ( x % 5  == 0  && x > 0 && x < R1+1 )
 			color = CRGB::White;
 		else
 			color = CRGB::DarkBlue;
@@ -426,13 +412,9 @@ void flag( void )
 
 	for( int i = 0; i < R1; i++ )
 	{
-		rotate( 0, 0, R1-2 );
-		rotate( 1, 0, R2-1 );
-		rotate( 2, 0, R3 );
 
-		rotate( 0, R1+C1, -(R1-2) );
-		rotate( 1, R2+C2, -(R2-1) );
-		rotate( 2, R3+C3, -R3);
+		rotate_bar( LEFT, DOWN );
+		rotate_bar( LEFT, UP    );
 
 		FastLED.show();
 		FastLED.delay( 60 );
@@ -456,19 +438,37 @@ void italy(void) {
 		}
 }
 
+void palette( void )
+{
+	int colorIndex = 0;
+	for( int i = 0; i < ROW1+ROW2+ROW3; i++)
+	{
+		Leds[i] = ColorFromPalette( currentPalette, colorIndex, BRIGHTNESS, currentBlending);
+		colorIndex += 3;
+	}
+	FastLED.show();
+	FastLED.delay( 3600 );
+	for ( int i=0; i< 500; i++)
+	{
+		rotate( 0, 0, ROW1-1 );
+		rotate( 1, 0, ROW2-1 );
+		rotate( 2, 0, ROW3-1 );
+		FastLED.show();
+	}
+}
 
 typedef struct {
 	void (*func)(void);
 	int times;
 } Patterns;
 
-#define MAX_PATTERNS 4
+#define MAX_PATTERNS 1
 const Patterns PATTERN[MAX_PATTERNS] = {
-		flag,        1,
-		rotate_test, 6,
-		italy,       1,
-		stripes,     1
-
+//		palette,      1,
+//		flag,         1,
+//		diagonal_test,1,
+		rotate_test,  1,
+//		italy,        1
 };
 
 void loop()
