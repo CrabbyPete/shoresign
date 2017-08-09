@@ -501,6 +501,66 @@ void waves( void )
 	}
 
 }
+
+void flag( void )
+{
+	int number;
+
+	CRGB color;
+
+	FastLED.clear();
+
+	for ( int y = 0; y < C1+2; y++)
+	{
+		if ( y % 2 == 0 )
+			color = CRGB::Red;
+		else
+			color = CRGB::White;
+
+		for ( int x = 0; x < R1+2;  x++ )
+		{
+			number = XY(  x, y );
+			if ( number < 0 )
+				continue;
+			Leds[ number ] = color;
+		}
+		FastLED.show();
+		FastLED.delay( 30 );
+	}
+
+	for ( int x = R1 + 1; x >= 0; x-- )
+	{
+		if ( x % 5  == 0  && x > 0 && x < R1 )
+			color = CRGB::White;
+		else
+			color = CRGB::DarkBlue;
+
+		for ( int y = 0; y < C1 + 2; y ++ )
+		{
+			number = XY( x, y );
+			if ( number < 0 )
+				continue;
+			Leds[ number ] = color;
+		}
+		FastLED.show();
+		FastLED.delay( 30 );
+	}
+
+	for( int i = 0; i < R1; i++ )
+	{
+		rotate( 0, 0, R1-2 );
+		rotate( 1, 0, R2-1 );
+		rotate( 2, 0, R3 );
+
+		rotate( 0, R1+C1, -(R1-2) );
+		rotate( 1, R2+C2, -(R2-1) );
+		rotate( 2, R3+C3, -R3);
+
+		FastLED.show();
+		FastLED.delay( 60 );
+	}
+}
+
 void rotate_test(void)
 {
 	CRGB usa[3]   = { CRGB::Red, CRGB::White, CRGB::Blue };
@@ -582,9 +642,10 @@ typedef struct {
 	int times;
 } Patterns;
 
-#define MAX_PATTERNS 2
+#define MAX_PATTERNS 3
 const Patterns PATTERN[MAX_PATTERNS] = {
-	waves, 4,
+	waves, 1,
+	flag, 1,
 	rotate_test,  1,
 };
 
