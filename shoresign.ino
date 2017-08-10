@@ -468,6 +468,41 @@ void color_block( CRGB *colors )
 	}
 	corner_fill( LEFT );
 }
+void italy(void) {
+	FastLED.clear();
+
+	CRGB colors[6] = { CRGB::Red,       CRGB::White,      CRGB::Blue,
+				       CRGB::DarkGreen, CRGB::White,      CRGB::Red };
+
+	for ( int c = 0; c < 20; c++ )
+		for( int i=0; i<4; i++ )
+		{
+			rectangle(0, colors[i]  );
+			rectangle(1, colors[i+1]);
+			rectangle(2, colors[i+2]);
+			FastLED.show();
+			FastLED.delay(60);
+		}
+}
+
+void palette( void )
+{
+	int colorIndex = 0;
+	for( int i = 0; i < ROW1+ROW2+ROW3; i++)
+	{
+		Leds[i] = ColorFromPalette( currentPalette, colorIndex, BRIGHTNESS, currentBlending);
+		colorIndex += 3;
+	}
+	FastLED.show();
+	FastLED.delay( 3600 );
+	for ( int i=0; i< 500; i++)
+	{
+		rotate( 0, 0, ROW1-1 );
+		rotate( 1, 0, ROW2-1 );
+		rotate( 2, 0, ROW3-1 );
+		FastLED.show();
+	}
+}
 
 void waves( void )
 {
@@ -548,13 +583,8 @@ void flag( void )
 
 	for( int i = 0; i < R1; i++ )
 	{
-		rotate( 0, 0, R1-2 );
-		rotate( 1, 0, R2-1 );
-		rotate( 2, 0, R3 );
-
-		rotate( 0, R1+C1, -(R1-2) );
-		rotate( 1, R2+C2, -(R2-1) );
-		rotate( 2, R3+C3, -R3);
+		rotate_bar( UP, RIGHT   );
+		rotate_bar( DOWN, RIGHT );
 
 		FastLED.show();
 		FastLED.delay( 60 );
@@ -642,8 +672,10 @@ typedef struct {
 	int times;
 } Patterns;
 
-#define MAX_PATTERNS 3
+#define MAX_PATTERNS 5
 const Patterns PATTERN[MAX_PATTERNS] = {
+	palette, 1,
+	italy, 1,
 	waves, 1,
 	flag, 1,
 	rotate_test,  1,
