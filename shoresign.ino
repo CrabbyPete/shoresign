@@ -468,6 +468,95 @@ void color_block( CRGB *colors )
 	}
 	corner_fill( LEFT );
 }
+
+
+void diagonal( int row, CRGB color  )
+{
+
+	if ( row < 0 )
+	{
+		Leds[ MAP( 0, ROW1-2 + row ) ] = color;
+		Leds[ MAP( 1, ROW2-2 + row ) ] = color;
+		Leds[ MAP( 2, ROW3-2 + row ) ] = color;
+	}
+	else
+	{
+		Leds[ MAP( 0, row ) ] = color;
+		Leds[ MAP( 1, row ) ] = color;
+		Leds[ MAP( 2, row ) ] = color;
+	}
+
+	if ( row < R3  )
+	{
+		row = 142 - row;
+		if ( row > R3 + C3 + 2 )
+		{
+			Leds[ MAP( 0, row     ) ] = color;
+			Leds[ MAP( 1, row - 2 ) ] = color;
+			Leds[ MAP( 2, row - 4 ) ] = color;
+		}
+	}
+	else
+	{
+		row += 1;
+		Leds[ MAP( 0, row + 4 ) ] = color;
+		Leds[ MAP( 1, row + 1 ) ] = color;
+		//Leds[ MAP( 2, row ) ] = color;
+	}
+}
+
+/*
+ *  Individual patterns start here
+ */
+
+void stripes( void )
+{
+	FastLED.clear();
+
+	int x, y, c = 0;
+	const CRGB colors[3] = { CRGB::Red, CRGB::White, CRGB::Blue };
+
+	for ( x = 69, y = 0; x > 1; x-=3 )
+	{
+
+		Leds[ MAP( 0, x )    ] = colors[c];
+		Leds[ MAP( 1, x )    ] = colors[c];
+		Leds[ MAP( 2, x )    ] = colors[c];
+
+		Leds[ MAP( 0, x-1 )  ] = colors[c];
+		Leds[ MAP( 1, x-1 )  ] = colors[c];
+		Leds[ MAP( 2, x-1 )  ] = colors[c];
+
+		Leds[ MAP( 0, x-2 )  ] = colors[c];
+		Leds[ MAP( 1, x-2 )  ] = colors[c];
+		Leds[ MAP( 2, x-2 )  ] = colors[c];
+
+
+		y += 2;
+		Leds[ MAP( 0, x + y + 4 )  ] = colors[c];
+		Leds[ MAP( 1, x + y + 2 )  ] = colors[c];
+		Leds[ MAP( 2, x + y     )  ] = colors[c];
+
+		y += 2;
+		Leds[ MAP( 0, x-1  + y + 4 )  ] = colors[c];
+		Leds[ MAP( 1, x-1  + y + 2 )  ] = colors[c];
+		Leds[ MAP( 2, x-1  + y     )  ] = colors[c];
+
+
+		y += 2;
+		Leds[ MAP( 0, x-2 + y + 4 )  ] = colors[c];
+		Leds[ MAP( 1, x-2 + y + 2 )   ] = colors[c];
+		Leds[ MAP( 2, x-2 + y     )   ] = colors[c];
+
+		FastLED.show();
+		FastLED.delay( 30 );
+
+		c++;
+		if ( c > 2 )
+			c = 0;
+	}
+}
+
 void italy(void) {
 	FastLED.clear();
 
@@ -672,13 +761,14 @@ typedef struct {
 	int times;
 } Patterns;
 
-#define MAX_PATTERNS 5
+#define MAX_PATTERNS 6
 const Patterns PATTERN[MAX_PATTERNS] = {
 	palette, 1,
 	italy, 1,
+	stripes,1,
 	waves, 1,
 	flag, 1,
-	rotate_test,  1,
+	rotate_test, 1,
 };
 
 void loop()
